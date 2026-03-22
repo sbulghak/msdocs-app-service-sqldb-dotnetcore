@@ -26,15 +26,16 @@ jobs:
       - name: dotnet publish
         run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
-      # --- EF CORE MIGRATIONS ---
+      # --- EF CORE MIGRATIONS (« ¿¬“ŒœŒÿ” ŒÃ) ---
       - name: Install EF Core Tool
         run: dotnet tool install -g dotnet-ef --version 7.0.14
 
       - name: Create migration bundle
         run: |
           PROJECT_PATH=$(find . -name "*.csproj" -print -quit)
+          echo "Found project at: $PROJECT_PATH"
           dotnet ef migrations bundle --runtime linux-x64 -p "$PROJECT_PATH" -o ${{env.DOTNET_ROOT}}/myapp/migrate
-      # --------------------------
+      # ------------------------------------------
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -54,13 +55,14 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: .net-app
-
+      
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          # Õ¿«¬» —≈ –≈“≤¬ ¬«ﬂ“≤ « ¬¿ÿŒ√Œ — –≤ÕÿŒ“”:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_89CFBC7CEF5C48B79F096F5064C3FFA9 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_C3BFFBAC3F714D3FBC3D5BA2AAC8CA9C }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_5377BFFE15094A6CBF13D916949A3EC1 }}
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
