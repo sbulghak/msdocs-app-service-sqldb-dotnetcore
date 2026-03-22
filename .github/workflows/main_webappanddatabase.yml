@@ -29,16 +29,19 @@ jobs:
       - name: dotnet publish
         run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
-      # --- НОВІ КРОКИ ДЛЯ EF CORE ---
+      # --- НОВІ КРОКИ ДЛЯ EF CORE З АВТОПОШУКОМ ПРОЄКТУ ---
       
       - name: Install EF Core Tool
         run: dotnet tool install -g dotnet-ef --version 7.0.14
 
       - name: Create migration bundle
         run: |
-          dotnet ef migrations bundle --runtime linux-x64 -p DotNetCoreSqlDb/DotNetCoreSqlDb.csproj -o ${{env.DOTNET_ROOT}}/myapp/migrate
+          # Знаходимо шлях до файлу проекту автоматично
+          PROJECT_PATH=$(find . -name "*.csproj" -print -quit)
+          echo "Found project at: $PROJECT_PATH"
+          dotnet ef migrations bundle --runtime linux-x64 -p "$PROJECT_PATH" -o ${{env.DOTNET_ROOT}}/myapp/migrate
           
-      # ------------------------------
+      # --------------------------------------------------
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
