@@ -29,6 +29,17 @@ jobs:
       - name: dotnet publish
         run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
+      # --- ÍÎÂ² ÊÐÎÊÈ ÄËß EF CORE ---
+      
+      - name: Install EF Core Tool
+        run: dotnet tool install -g dotnet-ef --version 7.0.14
+
+      - name: Create migration bundle
+        run: |
+          dotnet ef migrations bundle --runtime linux-x64 -p DotNetCoreSqlDb/DotNetCoreSqlDb.csproj -o ${{env.DOTNET_ROOT}}/myapp/migrate
+          
+      # ------------------------------
+
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
@@ -51,9 +62,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_89CFBC7CEF5C48B79F096F5064C3FFA9 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_C3BFFBAC3F714D3FBC3D5BA2AAC8CA9C }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_5377BFFE15094A6CBF13D916949A3EC1 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_E3558020DD4E4B8D86D01B916D58C3E3 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_9C8D5E1C904D4CEE827FF14C612D75FF }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_6D0468AC944441EEB46F077AFA62AF25 }}
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
@@ -62,4 +73,3 @@ jobs:
           app-name: 'WebAppAndDataBase'
           slot-name: 'Production'
           package: .
-          
