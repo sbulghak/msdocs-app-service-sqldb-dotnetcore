@@ -1,12 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using DotNetCoreSqlDb.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
+// 1. Змінено на UseNpgsql та вказано правильну назву змінної для PostgreSQL
 builder.Services.AddDbContext<MyDatabaseContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("AZURE_POSTGRESQL_CONNECTIONSTRING")));
+
+// 2. Виправлено отримання рядка підключення для Redis
 builder.Services.AddStackExchangeRedisCache(options =>
 {
-    options.Configuration = builder.Configuration["AZURE_REDIS_REDISCONNECTOR_CONNECTIONSTRING"];
+    options.Configuration = builder.Configuration.GetConnectionString("AZURE_REDIS_CONNECTIONSTRING");
     options.InstanceName = "SampleInstance";
 });
 
@@ -22,14 +26,13 @@ using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<MyDatabaseContext>();
-    context.Database.Migrate(); 
+    context.Database.Migrate(); // Це застосує міграції до PostgreSQL
 }
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    
     app.UseHsts();
 }
 
